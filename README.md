@@ -3,6 +3,8 @@ p2pool_fancy_front_end
 
 Front end that can be co-located on a separate web server or hosted on the p2pool node.
 
+you can see it running at http://www.norgzpool.net.au
+
 This code is based on goblins stats code https://github.com/m3ta/p2pool-stats-2 from the extended front end for p2pool https://github.com/hardcpp/P2PoolExtendedFrontEnd
 
 I have attempted to add commenst where i can but please keep in mind much of this is taken from the above projects. Please support the original authors if you can, if you wish to help me out then yo may donate to 1BCspL7f75gcU17M62524KSnfh7tyy3ZnF.
