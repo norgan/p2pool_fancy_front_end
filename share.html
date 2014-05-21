@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><!-- InstanceBegin template="/Templates/Main page.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- InstanceBeginEditable name="doctitle" -->
+        <title>Norgz Pool</title>
+        <!-- InstanceEndEditable -->
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+        <script type="text/javascript" src="d3.v2.min.js"></script>
+        <link href="css/bootstrap.css" rel="stylesheet">
+		<link href="css/jquery.jqplot.min.css" rel="stylesheet">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script language="javascript" type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+		<script class="include" language="javascript" type="text/javascript" src="js/jqplot.pieRenderer.min.js">					</script>
+	    <style>
+			
+		line {
+                stroke: black;
+                stroke-width: 1;
+                shape-rendering: crispEdges;
+            }
+            
+            .plotline {
+                stroke-width: 1.4;
+                fill: none;
+            }
+            
+            text {
+                font-family: Sans-serif;
+                font-size: 12px;
+            }
+	    </style>
+	    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+		<!-- InstanceBeginEditable name="head" -->
+        
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+        <script type="text/javascript" src="d3.v2.min.js"></script>
+    <!-- InstanceEndEditable -->
+        <link rel="stylesheet" type="text/css" href="css/component.css" />
+        <script src="js/modernizr.custom.js"></script>
+        <script type="text/javascript" src="d3.v2.min.js"></script>
+        <script type="text/javascript">
+            // based on goblin's p2pool-stats project
+            
+            function format_dt(dt) {
+                var pairs = [
+                    [365.2425*60*60*24, 'years'],
+                    [60*60*24, 'days'],
+                    [60*60, 'hours'],
+                    [60, 'minutes'],
+                    [1, 'seconds'],
+                ];
+                
+                for(var i in pairs) {
+                	var value = pairs[i][0];
+                	var name = pairs[i][1];
+                	
+                	if(dt > value) break;
+            	}
+            	
+            	return d3.format('.1f')(dt/value) + ' ' + name;
+            }
+            
+            function values(o){ res = []; for(var x in o) res.push(o[x]); return res; }
+            
+            d3.json('../local_stats', function(local_stats) {
+                d3.select('#peers_in').text(local_stats.peers.incoming);
+                d3.select('#peers_out').text(local_stats.peers.outgoing);
+                
+                var local = d3.sum(values(local_stats.miner_hash_rates));
+                var local_dead = d3.sum(values(local_stats.miner_dead_hash_rates));
+                d3.select('#local_rate').text(d3.format('.3s')(local) + 'H/s');
+                d3.select('#local_doa').text(d3.format('.2p')(local_dead/local));
+                
+                d3.select('#shares_total').text(local_stats.shares.total);
+                d3.select('#shares_orphan').text(local_stats.shares.orphan);
+                d3.select('#shares_dead').text(local_stats.shares.dead);
+                
+                d3.select('#efficiency').text(local_stats.efficiency != null ? d3.format('.4p')(local_stats.efficiency) : '???')
+                d3.select('#uptime').text(format_dt(local_stats.uptime));
+                d3.select('#block_value').text(local_stats.block_value);
+                
+                d3.select('#warnings').selectAll().data(local_stats.warnings).enter().append('p')
+                    .text(function(w){ return 'Warning: ' + w })
+                    .attr('style', 'color:red;border:1px solid red;padding:5px');
+                
+                var time_to_share = local_stats.attempts_to_share/local;
+                d3.select('#time_to_share').text(format_dt(time_to_share));
+                
+                d3.json('../global_stats', function(global_stats) {
+                    d3.select('#pool_rate').text(d3.format('.3s')(global_stats.pool_hash_rate) + 'H/s');
+                    d3.select('#pool_stale').text(d3.format('.2p')(global_stats.pool_stale_prop));
+                    d3.select('#difficulty').text(d3.format('.3r')(global_stats.min_difficulty));
+                    
+                    var time_to_block = local_stats.attempts_to_block/global_stats.pool_hash_rate;
+                    d3.select('#time_to_block').text(format_dt(time_to_block));
+                    
+                    d3.select('#expected_payout_amount').text(d3.format('.3r')(local/global_stats.pool_hash_rate*local_stats.block_value*(1-local_stats.donation_proportion)));
+                });
+            });
+            
+            d3.json('../web/version', function(version) {
+                d3.selectAll('#version').text(version);
+            });
+            
+            d3.json('../web/currency_info', function(currency_info) {
+                d3.selectAll('.symbol').text(currency_info.symbol);
+                
+                d3.json('../current_payouts', function(pays) {
+                    d3.json('../payout_addr', function(addr) {
+                        d3.select('#payout_addr').text(addr).attr('href', currency_info.address_explorer_url_prefix + addr);
+                        d3.select('#payout_amount').text(addr in pays ? pays[addr] : 0);
+                    });
+                    
+                    var arr = []; for(var i in pays) arr.push(i); arr.sort(function(a, b){return pays[b] - pays[a]});
+                    
+                    var tr = d3.select('#payouts').selectAll().data(arr).enter().append('tr');
+                    tr.append('td').append('a').text(function(addr){return addr}).attr('href', function(addr){return currency_info.address_explorer_url_prefix + addr});
+                    tr.append('td').text(function(addr){return pays[addr]});
+                    
+                    var total_tr = d3.select('#payouts').append('tr');
+                    total_tr.append('td').append('strong').text('Total');
+                    total_tr.append('td').text(d3.sum(arr, function(addr){return pays[addr]}).toFixed(8));
+                });
+                
+                d3.json('../recent_blocks', function(blocks) {
+                    var tr = d3.select('#blocks').selectAll().data(blocks).enter().append('tr');
+                    tr.append('td').text(function(block){return new Date(1000*block.ts).toString()});
+                    tr.append('td').text(function(block){return block.number});
+                    tr.append('td').append('a').text(function(block){return block.hash}).attr('href', function(block){return currency_info.block_explorer_url_prefix + block.hash});
+                    tr.append('td').append('a').text('→').attr('href', function(block){return 'share.html#' + block.share});
+                });
+            });
+            
+            d3.json('../web/best_share_hash', function(c) {
+                d3.select('#best_share').append('a').attr('href', 'share.html#' + c).text(c.substr(-8));
+            });
+            
+            function fill(url, id) {
+                d3.json(url, function(d) {
+                    d.sort()
+                    d3.select(id).selectAll().data(d).enter().append('span').text(' ').append('a').attr('href', function(c){return 'share.html#' + c}).text(function(c){return c.substr(-8)});
+                });
+            }
+            fill('../web/verified_heads', '#verified_heads');
+            fill('../web/heads', '#heads');
+            fill('../web/verified_tails', '#verified_tails');
+            fill('../web/tails', '#tails');
+            fill('../web/my_share_hashes', '#my_share_hashes');
+        </script>
+        <script>
+			function ChangeCurrentPeriod(p_Period, p_Sender)
+			{
+				period=p_Period;
+				$('#scale_menu li').removeClass('active');
+				$('#' + p_Sender).addClass('active');
+				document.location.href =  "?" + period;
+			}
+        </script>
+</head>
+    <body>
+            <div class="background">
+    <div class="header">
+        <img src="norgzpoollogo.png" width="711" height="150" alt=""/>
+     </div>   
+<!-- menu code start -->
+
+<div id="dl-menu" class="dl-menuwrapper">
+	<button class="dl-trigger">Open Menu</button>
+    <ul class="dl-menu">
+    	<li><a href="index.html">Home</a>
+         <li id="lifirst"><a href="stats.html">Stats</a>
+            <ul class="dl-submenu">
+            	<li><a href="graphs.html">Graphs</a></li>
+        		<li><a href="stats.html">Stats</a></li>
+        		<li><a href="http://p2pool.info/" target="_blank">P2Pool Stats</a></li>	
+                <li><a href="http://blockchain.info/" target="_blank">Bitcoin Blockchain</a></li>	
+                <li><a href="http://ltc.block-explorer.com/charts" target="_blank">Litecoin Block Stats</a></li>	
+            </ul>
+        </li>
+
+        <li><a href="#">Software</a>
+            <ul class="dl-submenu">
+                <li><a href="http://www.multiminerapp.com/" target="_blank">MultiMiner</a></li>
+                <li><a href="http://bfgminer.org/" target="_blank">BFGMiner</a></li>
+                <li><a href="http://ck.kolivas.org/apps/cgminer/" target="_blank">CGMiner</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Info</a>
+            <ul class="dl-submenu">
+                <li><a href="https://bitcointalk.org/" target="_blank">Bitcoin Talk Forums</a></li>
+                <li><a href="https://litecointalk.org/" target="_blank">Litecoin Talk Forums</a></li>
+                <li><a href="https://en.bitcoin.it/wiki/P2Pool" target="_blank">P2Pool</a></li>
+                <li><a href="http://www.reddit.com/r/BitcoinMining/" target="_blank">Reddit (Bitcoin Mining)</a></li>
+                <li><a href="http://www.reddit.com/r/litecoin" target="_blank">Reddit (Litecoin)</a>
+            </ul>
+        </li>
+        <li id="lilast"><a href="#">Wallets</a>
+            <ul class="dl-submenu">
+               <li><a href="https://bitcoin.org/en/" target="_blank">Bitcoin Core</a></li>
+                <li><a href="https://litecoin.org/" target="_blank">Litecoin Core</a></li>
+                <li><a href="https://electrum.org/" target="_blank">Electrum</a></li> 
+            </ul>
+        </li>
+        <li id="lilast"><a href="#">Hardware</a>
+            <ul class="dl-submenu">
+                <li><a href="https://www.bitmaintech.com/" target="_blank">Bitmain Technology</a></li>
+                <li><a href="http://butterflylabs.com/" target="_blank">Butterfly Labs</a></li>
+                <li><a href="http://www.kncminer.com/" target="_blank">KNC Technology</a></li>
+            </ul>
+        </li>
+    </ul>
+<!-- menu code end --></div><p></p>
+	<div class="mainbody">
+        <!-- InstanceBeginEditable name="MainBody" -->
+        <p>Loading...</p>
+        
+    <script type="text/javascript">
+            function hex2a(hex) {
+                var str = '';
+                for (var i = 0; i < hex.length; i += 2) {
+                    var code = parseInt(hex.substr(i, 2), 16);
+                    str += code >= 32 && code <= 126 ? String.fromCharCode(code) : '?';
+                }
+                return str;
+            }
+            
+            function target_to_difficulty(target) { return (0xffff0000 * Math.pow(2, 256-64) + 1)/(target + 1); }
+            
+            var current_hash = null;
+            function reload(currency_info) {
+                var share_hash = document.location.hash.substr(1);
+                if(share_hash == current_hash) return;
+                d3.json('http://au.norgzpool.net.au:9332/web/share/' + share_hash, function(share) {
+                    current_hash = share_hash;
+                    var b = d3.select('body');
+                    b.selectAll('*').remove();
+                    var h1 = b.append('h1');
+                        h1.append('a').attr('href', '/static/').text('P2Pool');
+                        h1.append('span').text(' > Share ');
+                        h1.append('a').attr('href', '#' + share_hash).text(share_hash.substr(-8));
+                    if(share == null) {
+                        b.append('p').text('share not found');
+                        return;
+                    }
+                    var parent = b.append('p')
+                        parent.append('span').text('Parent: ');
+                        parent.append('a').attr('href', '#' + share.parent).text(share.parent.substr(-8));
+                    var children = b.append('p');
+                        children.append('span').text('Children: ');
+                        children.data(share.children).append('a').attr('href', function(c){return '#' + c}).text(function(c){return c.substr(-8)});
+                    b.append('p').text('Type: ' + share.type_name);
+                    b.append('h2').text('Local data');
+                    b.append('p').text('Verified: ' + share.local.verified);
+                    b.append('p').text('Time first seen: ' + new Date(1000*share.local.time_first_seen) + ' (' + share.local.time_first_seen + ')');
+                    b.append('p').text('Peer first received from: ' + share.local.peer_first_received_from);
+                    b.append('h2').text('Share data');
+                    b.append('p').text('Timestamp: ' + new Date(1000*share.share_data.timestamp) + ' (' + share.share_data.timestamp + ')');
+                    b.append('p').text('Difficulty: ' + target_to_difficulty(share.share_data.target));
+                    b.append('p').text('Minimum difficulty: ' + target_to_difficulty(share.share_data.max_target));
+                    b.append('p').text('Payout address: ' + share.share_data.payout_address);
+                    b.append('p').text('Donation amount: ' + d3.format('.3p')(share.share_data.donation));
+                    b.append('p').text('Last stale: ' + share.share_data.stale_info);
+                    b.append('p').text('Nonce: ' + share.share_data.nonce);
+                    b.append('p').text('Desired version: ' + share.share_data.desired_version);
+                    b.append('h2').text('Block');
+                    var block = b.append('p')
+                        block.append('span').text('Hash: ')
+                        block.append('a').attr('href', currency_info.block_explorer_url_prefix + share.block.hash).text(share.block.hash);
+                    b.append('p').text('Transaction count: ' + share.block.txn_count_range);
+                    b.append('h2').text('Header');
+                    b.append('p').text('Version: ' + share.block.header.version);
+                    var prevblock = b.append('p')
+                        prevblock.append('span').text('Previous block: ');
+                        prevblock.append('a').attr('href', currency_info.block_explorer_url_prefix + share.block.header.previous_block).text(share.block.header.previous_block);
+                    b.append('p').text('Merkle root: ' + share.block.header.merkle_root);
+                    b.append('p').text('Timestamp: ' + share.block.header.timestamp);
+                    b.append('p').text('Difficulty: ' + target_to_difficulty(share.block.header.target));
+                    b.append('p').text('Nonce: ' + share.block.header.nonce);
+                    b.append('h2').text('Generation transaction');
+                    b.append('p').text('Hash: ' + share.block.gentx.hash);
+                    b.append('p').text('Coinbase: ' + share.block.gentx.coinbase + ' ' + hex2a(share.block.gentx.coinbase));
+                    b.append('p').text('Value: ' + share.block.gentx.value + ' ' + currency_info.symbol);
+                    return true;
+                });
+            }
+            
+            d3.json('http://au.norgzpool.net.au:9332/web/currency_info', function(currency_info) {
+                reload(currency_info);
+                setInterval(function(){ reload(currency_info) }, 100);
+            });
+        </script><!-- InstanceEndEditable -->
+   	</div>
+        <hr />
+        </div>
+        <div class="footer">
+        	<p>P2Pool Version: <span style="color:=blue" id="version"></span></p>
+        	<p>Designed and Maintained by Norgan</p>
+        	<p>&nbsp;</p> 
+        </div>
+
+        
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://webstat.norgan.net/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 11]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="http://webstat.norgan.net/piwik.php?idsite=11" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+<!-- Menu Code -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="js/jquery.dlmenu.js"></script>
+	<script>
+			$(function() {
+				$( '#dl-menu' ).dlmenu();
+			});
+		</script>
+<!-- end menu cocde -->
+</body>
+<!-- InstanceEnd --></html>

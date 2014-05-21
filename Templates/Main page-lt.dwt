@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- TemplateBeginEditable name="doctitle" -->
+        <title>Norgz Pool</title>
+        <!-- TemplateEndEditable -->
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+        <script type="text/javascript" src="d3.v2.min.js"></script>
+        <link href="css/bootstrap.css" rel="stylesheet">
+		<link href="css/jquery.jqplot.min.css" rel="stylesheet">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script language="javascript" type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+		<script class="include" language="javascript" type="text/javascript" src="js/jqplot.pieRenderer.min.js">					</script>
+	    <style>
+			
+		line {
+                stroke: black;
+                stroke-width: 1;
+                shape-rendering: crispEdges;
+            }
+            
+            .plotline {
+                stroke-width: 1.4;
+                fill: none;
+            }
+            
+            text {
+                font-family: Sans-serif;
+                font-size: 12px;
+            }
+	    </style>
+	    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+		<!-- TemplateBeginEditable name="head" -->
+		<!-- TemplateEndEditable -->
+        <link rel="stylesheet" type="text/css" href="css/component.css" />
+        <script src="js/modernizr.custom.js"></script>
+        <script type="text/javascript" src="d3.v2.min.js"></script>
+        <script type="text/javascript">
+            // based on goblin's p2pool-stats project
+            
+            function format_dt(dt) {
+                var pairs = [
+                    [365.2425*60*60*24, 'years'],
+                    [60*60*24, 'days'],
+                    [60*60, 'hours'],
+                    [60, 'minutes'],
+                    [1, 'seconds'],
+                ];
+                
+                for(var i in pairs) {
+                	var value = pairs[i][0];
+                	var name = pairs[i][1];
+                	
+                	if(dt > value) break;
+            	}
+            	
+            	return d3.format('.1f')(dt/value) + ' ' + name;
+            }
+            
+            function values(o){ res = []; for(var x in o) res.push(o[x]); return res; }
+            
+            d3.json('http://pool.norgzpool.net.au:9327/local_stats', function(local_stats) {
+                d3.select('#peers_in').text(local_stats.peers.incoming);
+                d3.select('#peers_out').text(local_stats.peers.outgoing);
+                
+                var local = d3.sum(values(local_stats.miner_hash_rates));
+                var local_dead = d3.sum(values(local_stats.miner_dead_hash_rates));
+                d3.select('#local_rate').text(d3.format('.3s')(local) + 'H/s');
+                d3.select('#local_doa').text(d3.format('.2p')(local_dead/local));
+                
+                d3.select('#shares_total').text(local_stats.shares.total);
+                d3.select('#shares_orphan').text(local_stats.shares.orphan);
+                d3.select('#shares_dead').text(local_stats.shares.dead);
+                
+                d3.select('#efficiency').text(local_stats.efficiency != null ? d3.format('.4p')(local_stats.efficiency) : '???')
+                d3.select('#uptime').text(format_dt(local_stats.uptime));
+                d3.select('#block_value').text(local_stats.block_value);
+                
+                d3.select('#warnings').selectAll().data(local_stats.warnings).enter().append('p')
+                    .text(function(w){ return 'Warning: ' + w })
+                    .attr('style', 'color:red;border:1px solid red;padding:5px');
+                
+                var time_to_share = local_stats.attempts_to_share/local;
+                d3.select('#time_to_share').text(format_dt(time_to_share));
+                
+                d3.json('http://pool.norgzpool.net.au:9327/global_stats', function(global_stats) {
+                    d3.select('#pool_rate').text(d3.format('.3s')(global_stats.pool_hash_rate) + 'H/s');
+                    d3.select('#pool_stale').text(d3.format('.2p')(global_stats.pool_stale_prop));
+                    d3.select('#difficulty').text(d3.format('.3r')(global_stats.min_difficulty));
+                    
+                    var time_to_block = local_stats.attempts_to_block/global_stats.pool_hash_rate;
+                    d3.select('#time_to_block').text(format_dt(time_to_block));
+                    
+                    d3.select('#expected_payout_amount').text(d3.format('.3r')(local/global_stats.pool_hash_rate*local_stats.block_value*(1-local_stats.donation_proportion)));
+                });
+            });
+            
+            d3.json('http://pool.norgzpool.net.au:9327/web/version', function(version) {
+                d3.selectAll('#version').text(version);
+            });
+            
+            d3.json('http://pool.norgzpool.net.au:9327/web/currency_info', function(currency_info) {
+                d3.selectAll('.symbol').text(currency_info.symbol);
+                
+                d3.json('http://pool.norgzpool.net.au:9327/current_payouts', function(pays) {
+                    d3.json('http://pool.norgzpool.net.au:9327/payout_addr', function(addr) {
+                        d3.select('#payout_addr').text(addr).attr('href', currency_info.address_explorer_url_prefix + addr);
+                        d3.select('#payout_amount').text(addr in pays ? pays[addr] : 0);
+                    });
+                    
+                    var arr = []; for(var i in pays) arr.push(i); arr.sort(function(a, b){return pays[b] - pays[a]});
+                    
+                    var tr = d3.select('#payouts').selectAll().data(arr).enter().append('tr');
+                    tr.append('td').append('a').text(function(addr){return addr}).attr('href', function(addr){return currency_info.address_explorer_url_prefix + addr});
+                    tr.append('td').text(function(addr){return pays[addr]});
+                    
+                    var total_tr = d3.select('#payouts').append('tr');
+                    total_tr.append('td').append('strong').text('Total');
+                    total_tr.append('td').text(d3.sum(arr, function(addr){return pays[addr]}).toFixed(8));
+                });
+                
+                d3.json('http://pool.norgzpool.net.au:9327/recent_blocks', function(blocks) {
+                    var tr = d3.select('#blocks').selectAll().data(blocks).enter().append('tr');
+                    tr.append('td').text(function(block){return new Date(1000*block.ts).toString()});
+                    tr.append('td').text(function(block){return block.number});
+                    tr.append('td').append('a').text(function(block){return block.hash}).attr('href', function(block){return currency_info.block_explorer_url_prefix + block.hash});
+                    tr.append('td').append('a').text('→').attr('href', function(block){return 'share.html#' + block.share});
+                });
+            });
+            
+            d3.json('http://pool.norgzpool.net.au:9327/web/best_share_hash', function(c) {
+                d3.select('#best_share').append('a').attr('href', 'share.html#' + c).text(c.substr(-8));
+            });
+            
+            function fill(url, id) {
+                d3.json(url, function(d) {
+                    d.sort()
+                    d3.select(id).selectAll().data(d).enter().append('span').text(' ').append('a').attr('href', function(c){return 'share.html#' + c}).text(function(c){return c.substr(-8)});
+                });
+            }
+            fill('http://pool.norgzpool.net.au:9327/web/verified_heads', '#verified_heads');
+            fill('http://pool.norgzpool.net.au:9327/web/heads', '#heads');
+            fill('http://pool.norgzpool.net.au:9327/web/verified_tails', '#verified_tails');
+            fill('http://pool.norgzpool.net.au:9327/web/tails', '#tails');
+            fill('http://pool.norgzpool.net.au:9327/web/my_share_hashes', '#my_share_hashes');
+        </script>
+        <script>
+			function ChangeCurrentPeriod(p_Period, p_Sender)
+			{
+				period=p_Period;
+				$('#scale_menu li').removeClass('active');
+				$('#' + p_Sender).addClass('active');
+				document.location.href =  "?" + period;
+			}
+        </script>
+</head>
+    <body>
+            <div class="background">
+    <div class="header">
+        <img src="norgzpoollogo.png" width="711" height="150" alt=""/>
+     </div>   
+<!-- menu code start -->
+
+<div id="dl-menu" class="dl-menuwrapper">
+	<button class="dl-trigger">Open Menu</button>
+    <ul class="dl-menu">
+    	<li><a href="index.html">Home</a>
+         <li id="lifirst"><a href="stats.html">Stats</a>
+            <ul class="dl-submenu">
+            	<li><a href="graphs.html">Graphs</a></li>
+        		<li><a href="stats.html">Stats</a></li>
+        		<li><a href="http://p2pool.info/" target="_blank">P2Pool Stats</a></li>	
+                <li><a href="http://blockchain.info/" target="_blank">Bitcoin Blockchain</a></li>	
+                <li><a href="http://ltc.block-explorer.com/charts" target="_blank">Litecoin Block Stats</a></li>	
+            </ul>
+        </li>
+
+        <li><a href="#">Software</a>
+            <ul class="dl-submenu">
+                <li><a href="http://www.multiminerapp.com/" target="_blank">MultiMiner</a></li>
+                <li><a href="http://bfgminer.org/" target="_blank">BFGMiner</a></li>
+                <li><a href="http://ck.kolivas.org/apps/cgminer/" target="_blank">CGMiner</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Info</a>
+            <ul class="dl-submenu">
+                <li><a href="https://bitcointalk.org/" target="_blank">Bitcoin Talk Forums</a></li>
+                <li><a href="https://litecointalk.org/" target="_blank">Litecoin Talk Forums</a></li>
+                <li><a href="https://en.bitcoin.it/wiki/P2Pool" target="_blank">P2Pool</a></li>
+                <li><a href="http://www.reddit.com/r/BitcoinMining/" target="_blank">Reddit (Bitcoin Mining)</a></li>
+                <li><a href="http://www.reddit.com/r/litecoin" target="_blank">Reddit (Litecoin)</a>
+            </ul>
+        </li>
+        <li id="lilast"><a href="#">Wallets</a>
+            <ul class="dl-submenu">
+               <li><a href="https://bitcoin.org/en/" target="_blank">Bitcoin Core</a></li>
+                <li><a href="https://litecoin.org/" target="_blank">Litecoin Core</a></li>
+                <li><a href="https://electrum.org/" target="_blank">Electrum</a></li> 
+            </ul>
+        </li>
+        <li id="lilast"><a href="#">Hardware</a>
+            <ul class="dl-submenu">
+                <li><a href="https://www.bitmaintech.com/" target="_blank">Bitmain Technology</a></li>
+                <li><a href="http://butterflylabs.com/" target="_blank">Butterfly Labs</a></li>
+                <li><a href="http://www.kncminer.com/" target="_blank">KNC Technology</a></li>
+            </ul>
+        </li>
+    </ul>
+<!-- menu code end --></div><p></p>
+	<div class="mainbody">
+        <!-- TemplateBeginEditable name="MainBody" -->MainBody<!-- TemplateEndEditable -->
+   	</div>
+        <hr />
+        </div>
+        <div class="footer">
+        	<p>P2Pool Version: <span style="color:=blue" id="version"></span></p>
+        	<p>Designed and Maintained by Norgan</p>
+        	<p>&nbsp;</p> 
+        </div>
+
+        
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://webstat.norgan.net/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 11]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="http://webstat.norgan.net/piwik.php?idsite=11" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+<!-- Menu Code -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="../js/jquery.dlmenu.js"></script>
+	<script>
+			$(function() {
+				$( '#dl-menu' ).dlmenu();
+			});
+		</script>
+<!-- end menu cocde -->
+</body>
+</html>
