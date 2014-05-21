@@ -15,9 +15,12 @@ Much of the data is taken from json and leverages jquery.
 
 How to get it working on your node:
 
-Step 1. copy the code to the root web folder of your hosting platform or to the web-static folder of p2pool
-Step 2. rename anything in "d3.json('http://au.norgzpool.net.au:9332" to your node address. Do this in the index.html graphs.html and stats.html
-Step 3. load your own logo for the header. make it 711x150 pixels or as close to that as you can. it can be jpg, png or gif and you change it in the header div of the index and other pages (the dreamweaver template is included if you want to use that so you only change in the index and template)
+Step 1. copy the code to the root web folder of your hosting platform or to the web-static folder of p2pool.
+
+Step 2. rename anything in "d3.json('http://au.norgzpool.net.au:9332" to your node address. Do this in the index.html graphs.html and stats.html.
+
+Step 3. load your own logo for the header. make it 711x150 pixels or as close to that as you can. it can be jpg, png or gif and you change it in the header div of the index and other pages (the dreamweaver template is included if you want to use that so you only change in the index and template).
+
 Step 4. browse and enjoy p2pool stats in a nice interface and using standard port 80
 
 
