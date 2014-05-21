@@ -27,3 +27,18 @@ Step 4. browse and enjoy p2pool stats in a nice interface and using standard por
 Sorry in advance if somethign is not clear, I am not a developer, I just know enough to piece things together. Happy to assist if required. 
 
 Note: If i have missed crediting anyone or there is something here you do not wish to be redistributed please accept my appology and contact me to have it removed immediately. 
+
+Known Issues:
+
+1. Version is blank on all pages other than index
+2. stats page graphs need to be aligned to the width of main graphs
+
+
+To Do:
+1. update other pages to show p2pool version or remove the entry from footer
+2. remove server config to external files to make running multiple nodes easier
+3. find a way to make the info pane stay away if user clicks it away then refreshes
+4. clean up css
+5. add more commenting
+6. find a way to fix the external json issue with the node_ststus front and and integrate the highflow charts from that
+7. fix graph alignement on the stats page
