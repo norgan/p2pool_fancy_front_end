@@ -64,6 +64,18 @@ body {
 	align-content:center;
 }
 
+.graphbody {
+	align-self:center
+	text-align:center;
+	margin-top: 50px;
+	margin-left:auto;
+	margin-right:auto;
+	color:black;
+	background-color:white;
+	width: 95%;
+	align-content:center;
+}
+
 .background {
 	background-color: #194761;
 	max-width: 1050px;
