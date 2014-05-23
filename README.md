@@ -47,3 +47,4 @@ pie charts on graph page do not work
 2. find a way to make the info pane stay away if user clicks it away then refreshes
 3. add more commenting - in progress
 4. find a way to fix the external json issue with the node_ststus front and and integrate the highflow charts from that
+5. change code to enable one set of html to connect to different nodes via menu click. i.e. onclick set var to server address, instead of having a full set og html for each node.
