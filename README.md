@@ -7,7 +7,9 @@ you can see it running at http://www.norgzpool.net.au
 
 This code is based on goblins stats code https://github.com/m3ta/p2pool-stats-2 from the extended front end for p2pool https://github.com/hardcpp/P2PoolExtendedFrontEnd
 
-I have attempted to add commenst where i can but please keep in mind much of this is taken from the above projects. Please support the original authors if you can, if you wish to help me out then yo may donate to 1BCspL7f75gcU17M62524KSnfh7tyy3ZnF.
+I have attempted to add comments where I can but please keep in mind much of this is taken from the above projects. 
+
+Please support the original authors if you can, if you wish to help me out then you may donate to 1BCspL7f75gcU17M62524KSnfh7tyy3ZnF.
 
 Much of the styling is done in css, specifically the bootstrap-responsive.css, menu styling is done in component.css.
 
@@ -44,7 +46,7 @@ To Do:
 1. update other pages to show p2pool version or remove the entry from footer - done in 0.3
 2. remove server config to external files to make running multiple nodes easier
 3. find a way to make the info pane stay away if user clicks it away then refreshes
-4. clean up css
-5. add more commenting
+4. clean up css - done in 0.5
+5. add more commenting - in progress
 6. find a way to fix the external json issue with the node_ststus front and and integrate the highflow charts from that
-7. fix graph alignement on the stats page
+7. fix graph alignement on the stats page - fixed in 0.5
