@@ -4,7 +4,7 @@
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <!-- TemplateBeginEditable name="doctitle" -->
-        <title>Norgz Pool</title>
+        <title>P2Pool Front End</title>
         <!-- TemplateEndEditable -->
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
         <script type="text/javascript" src="d3.v2.min.js"></script>
@@ -160,7 +160,7 @@
     <body>
             <div class="background">
     <div class="header">
-        <img src="norgzpoollogo.png" width="711" height="150" alt=""/>
+        <img src="yourlogo" width="711" height="150" alt=""/>
      </div>   
 <!-- menu code start -->
 
@@ -217,26 +217,11 @@
         </div>
         <div class="footer">
         	<p>P2Pool Version: <span style="color:=blue" id="version"></span></p>
-        	<p>Designed and Maintained by Norgan</p>
+        	<p>put copywrite and/or contact here</p>
         	<p>&nbsp;</p> 
         </div>
 
         
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://webstat.norgan.net/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 11]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
-    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript><p><img src="http://webstat.norgan.net/piwik.php?idsite=11" style="border:0;" alt="" /></p></noscript>
-<!-- End Piwik Code -->
 
 <!-- Menu Code -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

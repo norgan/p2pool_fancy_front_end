@@ -13,7 +13,7 @@ body {
 	} 
  
 .header {
-	background-color:#2C8597;
+	background-color:white;
 	width: 100%;
 	text-align:center;
 	-webkit-border-top-left-radius: 5px;
@@ -24,8 +24,8 @@ body {
 }
 
 .infobox {
-	background-color:#194761;
-	color:white;
+	background-color:white;
+	color:black;
 	width: 400px;
 	margin-top: 10px;
 	margin-left:auto;
@@ -58,8 +58,8 @@ body {
 .mainbody {
 	text-align:center;
 	margin-top: 50px;
-	color:white;
-	background-color:#194761;
+	color:black;
+	background-color:white;
 	width: 100%;
 	align-content:center;
 }
@@ -77,7 +77,7 @@ body {
 }
 
 .background {
-	background-color: #194761;
+	background-color: black;
 	max-width: 1050px;
 	height: 99%;
 	margin-right: auto;
