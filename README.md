@@ -19,7 +19,7 @@ Much of the data is taken from json and leverages jquery.
 
 <b>Step 1.</b> copy the code to the root web folder of your hosting platform or to the web-static folder of p2pool.
 
-<b>Step 2.</b> rename anything in "d3.json('.. or local or http://yourpool:9332 for remote" to your node address. Do this in the index.html graphs.html and stats.html.
+<b>Step 2.</b> In the index.html graphs.html and stats.html change "var server = "http://localhost:9332";" to reflect the remote node address or leave if runing on the local web-static folder.
 
 <b>Step 3.</b> load your own logo for the header. make it 711x150 pixels or as close to that as you can. it can be jpg, png or gif and you change it in the header div of the index and other pages <img src="yourlogo" (the dreamweaver template is included if you want to use that so you only change in the index and template).
 
