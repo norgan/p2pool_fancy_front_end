@@ -17,13 +17,17 @@ How to get it working on your node:
 
 Step 1. copy the code to the root web folder of your hosting platform or to the web-static folder of p2pool.
 
-Step 2. rename anything in "d3.json('http://au.norgzpool.net.au:9332" to your node address. Do this in the index.html graphs.html and stats.html.
+Step 2. rename anything in "d3.json('.. or local or http://yourpool:9332 for remote" to your node address. Do this in the index.html graphs.html and stats.html.
 
-Step 3. load your own logo for the header. make it 711x150 pixels or as close to that as you can. it can be jpg, png or gif and you change it in the header div of the index and other pages (the dreamweaver template is included if you want to use that so you only change in the index and template).
+Step 3. load your own logo for the header. make it 711x150 pixels or as close to that as you can. it can be jpg, png or gif and you change it in the header div of the index and other pages <img src="yourlogo" (the dreamweaver template is included if you want to use that so you only change in the index and template).
 
-Step 4. browse and enjoy p2pool stats in a nice interface and using standard port 80
+Step 4. Edit <div class="infobox"> and include your node address and how to connect. This box can be hidden by clicking the X.
 
-Step 5. Remove or change the footer donation link and refferal link
+Step 5. edit "Introduction and info on your node goes here" with some info on your node. "Box for more information" can be edited to include other info or news.
+
+Step 6. browse and enjoy p2pool stats in a nice interface and using standard port 80
+
+Step 7. Remove or change the footer donation link and refferal link
 
 
 Sorry in advance if somethign is not clear, I am not a developer, I just know enough to piece things together. Happy to assist if required. 
