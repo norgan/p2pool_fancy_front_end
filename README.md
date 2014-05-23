@@ -30,12 +30,11 @@ Note: If i have missed crediting anyone or there is something here you do not wi
 
 Known Issues:
 
-1. Version is blank on all pages other than index
-2. stats page graphs need to be aligned to the width of main graphs
+pie charts on graph page do not work
 
 
 To Do:
-1. update other pages to show p2pool version or remove the entry from footer
+1. update other pages to show p2pool version or remove the entry from footer - done in 0.3
 2. remove server config to external files to make running multiple nodes easier
 3. find a way to make the info pane stay away if user clicks it away then refreshes
 4. clean up css
