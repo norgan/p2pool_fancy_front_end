@@ -23,6 +23,8 @@ Step 3. load your own logo for the header. make it 711x150 pixels or as close to
 
 Step 4. browse and enjoy p2pool stats in a nice interface and using standard port 80
 
+Step 5. Remove or change the footer donation link and refferal link
+
 
 Sorry in advance if somethign is not clear, I am not a developer, I just know enough to piece things together. Happy to assist if required. 
 
