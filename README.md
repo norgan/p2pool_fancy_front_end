@@ -34,6 +34,7 @@ pie charts on graph page do not work
 
 
 To Do:
+
 1. update other pages to show p2pool version or remove the entry from footer - done in 0.3
 2. remove server config to external files to make running multiple nodes easier
 3. find a way to make the info pane stay away if user clicks it away then refreshes
