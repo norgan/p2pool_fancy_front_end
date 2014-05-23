@@ -43,10 +43,7 @@ pie charts on graph page do not work
 
 <h1>To Do:</h1>
 
-1. update other pages to show p2pool version or remove the entry from footer - done in 0.3
-2. remove server config to external files to make running multiple nodes easier
-3. find a way to make the info pane stay away if user clicks it away then refreshes
-4. clean up css - done in 0.5
-5. add more commenting - in progress
-6. find a way to fix the external json issue with the node_ststus front and and integrate the highflow charts from that
-7. fix graph alignement on the stats page - fixed in 0.5
+1. remove server config to external files to make running multiple nodes easier - In progress now only in one place per page in v 0.6
+2. find a way to make the info pane stay away if user clicks it away then refreshes
+3. add more commenting - in progress
+4. find a way to fix the external json issue with the node_ststus front and and integrate the highflow charts from that
