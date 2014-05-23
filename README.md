@@ -32,7 +32,7 @@ Much of the data is taken from json and leverages jquery.
 <b>Step 7.</b> Remove or change the footer donation link and refferal link
 
 
-Sorry in advance if somethign is not clear, I am not a developer, I just know enough to piece things together. Happy to assist if required. 
+Sorry in advance if something is not clear, I am not a developer, I just know enough to piece things together. Happy to assist if required. 
 
 Note: If i have missed crediting anyone or there is something here you do not wish to be redistributed please accept my appology and contact me to have it removed immediately. 
 
