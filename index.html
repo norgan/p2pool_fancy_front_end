@@ -201,8 +201,8 @@
 			    });
 				/// pool speed grapg
 				plot_later(d3.select("#main-local"), "H/s", "H", [
-                    {"url": ".. or local or http://yourpool:9332 for remote/web/graph_data/local_hash_rate/last_" + period, "color": "#0000FF", "label": "Total"},
-                    {"url": ".. or local or http://yourpool:9332 for remote/web/graph_data/local_dead_hash_rate/last_" + period, "color": "#FF0000", "label": "Dead"}
+                    {"url": server +"/web/graph_data/local_hash_rate/last_" + period, "color": "#0000FF", "label": "Total"},
+                    {"url": server +"/web/graph_data/local_dead_hash_rate/last_" + period, "color": "#FF0000", "label": "Dead"}
                 ],1000,300);
 
 		}
@@ -263,8 +263,6 @@ function dmxDataBindingsAction(action, target) { // v1.50
 <div id="dl-menu" class="dl-menuwrapper">
 	<button class="dl-trigger">Open Menu</button>
     <ul class="dl-menu">
-    <li><a href="../singapore/index.html">Singapore Pool</a></li>
-    	<li><a href="../litecoin/index.html">Litecoin Pool</a></li>
          <li id="lifirst"><a href="#">Stats</a>
             <ul class="dl-submenu">
             	<li><a href="graphs.html">Graphs</a></li>
